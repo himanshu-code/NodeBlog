@@ -43,7 +43,7 @@ interface Post {
 
 type AuthMode = "login" | "register";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/blogapp/api";
 
 const getErrorMessage = async (response: Response) => {
   try {
@@ -59,7 +59,9 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState<string | null>(localStorage.getItem("blog-token"));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("blog-token"),
+  );
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -83,7 +85,9 @@ function App() {
       const data: Post[] = await response.json();
       setPosts(data);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Failed to load posts");
+      setError(
+        loadError instanceof Error ? loadError.message : "Failed to load posts",
+      );
     } finally {
       setLoadingPosts(false);
     }
@@ -113,7 +117,11 @@ function App() {
       const response = await fetch(`${API_BASE_URL}/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authMode === "login" ? { email, password } : { name, email, password }),
+        body: JSON.stringify(
+          authMode === "login"
+            ? { email, password }
+            : { name, email, password },
+        ),
       });
 
       if (!response.ok) {
@@ -122,9 +130,15 @@ function App() {
 
       const data: AuthResponse = await response.json();
       saveToken(data.token);
-      setMessage(`Successfully ${authMode === "login" ? "logged in" : "registered"}.`);
+      setMessage(
+        `Successfully ${authMode === "login" ? "logged in" : "registered"}.`,
+      );
     } catch (authError) {
-      setError(authError instanceof Error ? authError.message : "Authentication failed");
+      setError(
+        authError instanceof Error
+          ? authError.message
+          : "Authentication failed",
+      );
     } finally {
       setBusy(false);
     }
@@ -159,7 +173,11 @@ function App() {
       setMessage("Post created.");
       await loadPosts();
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : "Failed to create post");
+      setError(
+        createError instanceof Error
+          ? createError.message
+          : "Failed to create post",
+      );
     } finally {
       setBusy(false);
     }
@@ -184,7 +202,11 @@ function App() {
 
       await loadPosts();
     } catch (likeError) {
-      setError(likeError instanceof Error ? likeError.message : "Failed to toggle like");
+      setError(
+        likeError instanceof Error
+          ? likeError.message
+          : "Failed to toggle like",
+      );
     }
   };
 
@@ -208,7 +230,11 @@ function App() {
       setMessage("Post deleted.");
       await loadPosts();
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete post");
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Failed to delete post",
+      );
     }
   };
 
@@ -225,7 +251,10 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             NodeBlog Frontend
           </Typography>
-          <Chip color={isLoggedIn ? "success" : "default"} label={isLoggedIn ? "Authenticated" : "Guest"} />
+          <Chip
+            color={isLoggedIn ? "success" : "default"}
+            label={isLoggedIn ? "Authenticated" : "Guest"}
+          />
           {isLoggedIn && (
             <Button color="inherit" sx={{ ml: 2 }} onClick={handleLogout}>
               Logout
@@ -244,17 +273,37 @@ function App() {
               <Typography variant="h6" gutterBottom>
                 Authentication
               </Typography>
-              <Tabs value={authMode} onChange={(_, value: AuthMode) => setAuthMode(value)}>
+              <Tabs
+                value={authMode}
+                onChange={(_, value: AuthMode) => setAuthMode(value)}
+              >
                 <Tab value="login" label="Login" />
                 <Tab value="register" label="Register" />
               </Tabs>
               <Box component="form" onSubmit={handleAuth} sx={{ mt: 2 }}>
                 <Stack spacing={2}>
                   {authMode === "register" && (
-                    <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)} required />
+                    <TextField
+                      label="Name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      required
+                    />
                   )}
-                  <TextField label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
-                  <TextField label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+                  <TextField
+                    label="Email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                  />
+                  <TextField
+                    label="Password"
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    required
+                  />
                   <Button type="submit" variant="contained" disabled={busy}>
                     {authMode === "login" ? "Login" : "Register"}
                   </Button>
@@ -270,7 +319,12 @@ function App() {
               </Typography>
               <Box component="form" onSubmit={handleCreatePost}>
                 <Stack spacing={2}>
-                  <TextField label="Title" value={title} onChange={(event) => setTitle(event.target.value)} required />
+                  <TextField
+                    label="Title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    required
+                  />
                   <TextField
                     label="Content"
                     multiline
@@ -279,7 +333,11 @@ function App() {
                     onChange={(event) => setContent(event.target.value)}
                     required
                   />
-                  <Button type="submit" variant="contained" disabled={busy || !isLoggedIn}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={busy || !isLoggedIn}
+                  >
                     Publish
                   </Button>
                 </Stack>
@@ -298,8 +356,13 @@ function App() {
                 <Card key={post._id}>
                   <CardContent>
                     <Typography variant="h6">{post.title}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      By {post.author?.name ?? "Unknown"} • {new Date(post.createdAt).toLocaleString()}
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      By {post.author?.name ?? "Unknown"} •{" "}
+                      {new Date(post.createdAt).toLocaleString()}
                     </Typography>
                     <Typography variant="body1">{post.content}</Typography>
                   </CardContent>
@@ -312,14 +375,22 @@ function App() {
                     >
                       Like ({post.likes?.length ?? 0})
                     </Button>
-                    <IconButton color="error" onClick={() => handleDeletePost(post._id)} disabled={!isLoggedIn}>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeletePost(post._id)}
+                      disabled={!isLoggedIn}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </CardActions>
                 </Card>
               ))
             )}
-            {!loadingPosts && posts.length === 0 && <Typography color="text.secondary">No posts available yet.</Typography>}
+            {!loadingPosts && posts.length === 0 && (
+              <Typography color="text.secondary">
+                No posts available yet.
+              </Typography>
+            )}
           </Stack>
         </Stack>
       </Container>
